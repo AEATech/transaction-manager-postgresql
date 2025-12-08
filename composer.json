@@ -1,0 +1,61 @@
+{
+    "name": "aeatech/transaction-manager-postgresql",
+    "description": "PostgreSQL dialect layer for AEATech Transaction Manager, providing PostgreSQL-specific SQL behavior and extensions not covered by the core or common packages.",
+    "license": "MIT",
+    "type": "library",
+    "config": {
+        "sort-packages": true
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:Shahelm/transaction-manager-core.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:Shahelm/transaction-manager-doctrine-adapter.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:Shahelm/transaction-manager-common-transactions.git"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "ext-pdo": "*",
+        "aeatech/transaction-manager-common-transactions": "dev-main",
+        "aeatech/transaction-manager-core": "dev-main",
+        "aeatech/transaction-manager-doctrine-adapter": "dev-main"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.6.10",
+        "phpunit/phpunit": "^11.5",
+        "roave/security-advisories": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "AEATech\\TransactionManager\\PostgreSQL\\": "src/AEATech/TransactionManager/PostgreSQL"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AEATech\\Test\\TransactionManager\\PostgreSQL\\": "tests/AEATech/Test/TransactionManager/PostgreSQL"
+        }
+    },
+    "archive": {
+        "exclude": [
+            "/docker",
+            "/tests",
+            "/phpunit.xml"
+        ]
+    },
+    "keywords": [
+        "transaction",
+        "bulk-update",
+        "insert",
+        "update",
+        "delete",
+        "postgresql-specific",
+        "database"
+    ]
+}

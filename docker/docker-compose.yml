@@ -1,0 +1,235 @@
+version: '3.3'
+
+services:
+    # --------------------------------------------------------------------------
+    # PostgreSQL 16
+    # --------------------------------------------------------------------------
+    pg16:
+        image: postgres:16
+        restart: on-failure
+        environment:
+            POSTGRES_USER: test
+            POSTGRES_PASSWORD: test
+            POSTGRES_DB: test
+        volumes:
+            - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+        networks:
+            - pg16_net
+
+    php-cli-8.2-pg16:
+        build:
+            context: 8.2/
+            args:
+                OWNER_USER: ${USER}
+                OWNER_USER_ID: 1000
+        networks:
+            - pg16_net
+        environment:
+            PGSQL_HOST: pg16
+        command: php -r "while (true) { sleep(86400); }"
+        working_dir: /app
+        volumes:
+            - ../../transaction-manager-postgresql:/app:rw
+            - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        depends_on:
+            - pg16
+
+    php-cli-8.3-pg16:
+        build:
+            context: 8.3/
+            args:
+                OWNER_USER: ${USER}
+                OWNER_USER_ID: 1000
+        networks:
+            - pg16_net
+        environment:
+            PGSQL_HOST: pg16
+        command: php -r "while (true) { sleep(86400); }"
+        working_dir: /app
+        volumes:
+            - ../../transaction-manager-postgresql:/app:rw
+            - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        depends_on:
+            - pg16
+
+    php-cli-8.4-pg16:
+        build:
+            context: 8.4/
+            args:
+                OWNER_USER: ${USER}
+                OWNER_USER_ID: 1000
+        networks:
+            - pg16_net
+        environment:
+            PGSQL_HOST: pg16
+        command: php -r "while (true) { sleep(86400); }"
+        working_dir: /app
+        volumes:
+            - ../../transaction-manager-postgresql:/app:rw
+            - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        depends_on:
+            - pg16
+
+    # --------------------------------------------------------------------------
+    # PostgreSQL 17
+    # --------------------------------------------------------------------------
+    pg17:
+        image: postgres:17
+        restart: on-failure
+        environment:
+            POSTGRES_USER: test
+            POSTGRES_PASSWORD: test
+            POSTGRES_DB: test
+        volumes:
+            - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+        networks:
+            - pg17_net
+
+    php-cli-8.2-pg17:
+        build:
+            context: 8.2/
+            args:
+                OWNER_USER: ${USER}
+                OWNER_USER_ID: 1000
+        networks:
+            - pg17_net
+        environment:
+            PGSQL_HOST: pg17
+        command: php -r "while (true) { sleep(86400); }"
+        working_dir: /app
+        volumes:
+            - ../../transaction-manager-postgresql:/app:rw
+            - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        depends_on:
+            - pg17
+
+    php-cli-8.3-pg17:
+        build:
+            context: 8.3/
+            args:
+                OWNER_USER: ${USER}
+                OWNER_USER_ID: 1000
+        networks:
+            - pg17_net
+        environment:
+            PGSQL_HOST: pg17
+        command: php -r "while (true) { sleep(86400); }"
+        working_dir: /app
+        volumes:
+            - ../../transaction-manager-postgresql:/app:rw
+            - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        depends_on:
+            - pg17
+
+    php-cli-8.4-pg17:
+        build:
+            context: 8.4/
+            args:
+                OWNER_USER: ${USER}
+                OWNER_USER_ID: 1000
+        networks:
+            - pg17_net
+        environment:
+            PGSQL_HOST: pg17
+        command: php -r "while (true) { sleep(86400); }"
+        working_dir: /app
+        volumes:
+            - ../../transaction-manager-postgresql:/app:rw
+            - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        depends_on:
+            - pg17
+
+    # --------------------------------------------------------------------------
+    # PostgreSQL 18
+    # --------------------------------------------------------------------------
+    pg18:
+        image: postgres:18
+        restart: on-failure
+        environment:
+            POSTGRES_USER: test
+            POSTGRES_PASSWORD: test
+            POSTGRES_DB: test
+        volumes:
+            - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+        networks:
+            - pg18_net
+
+    php-cli-8.2-pg18:
+        build:
+            context: 8.2/
+            args:
+                OWNER_USER: ${USER}
+                OWNER_USER_ID: 1000
+        networks:
+            - pg18_net
+        environment:
+            PGSQL_HOST: pg18
+        command: php -r "while (true) { sleep(86400); }"
+        working_dir: /app
+        volumes:
+            - ../../transaction-manager-postgresql:/app:rw
+            - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        depends_on:
+            - pg18
+
+    php-cli-8.3-pg18:
+        build:
+            context: 8.3/
+            args:
+                OWNER_USER: ${USER}
+                OWNER_USER_ID: 1000
+        networks:
+            - pg18_net
+        environment:
+            PGSQL_HOST: pg18
+        command: php -r "while (true) { sleep(86400); }"
+        working_dir: /app
+        volumes:
+            - ../../transaction-manager-postgresql:/app:rw
+            - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        depends_on:
+            - pg18
+
+    php-cli-8.4-pg18:
+        build:
+            context: 8.4/
+            args:
+                OWNER_USER: ${USER}
+                OWNER_USER_ID: 1000
+        networks:
+            - pg18_net
+        environment:
+            PGSQL_HOST: pg18
+        command: php -r "while (true) { sleep(86400); }"
+        working_dir: /app
+        volumes:
+            - ../../transaction-manager-postgresql:/app:rw
+            - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        depends_on:
+            - pg18
+
+# ----------------------------------------------------------------------------
+# Networks
+# ----------------------------------------------------------------------------
+networks:
+    pg16_net:
+    pg17_net:
+    pg18_net:
