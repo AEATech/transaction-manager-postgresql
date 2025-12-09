@@ -15,7 +15,7 @@ class PostgreSQLErrorHeuristics implements DatabaseErrorHeuristicsInterface
         '57P0',
     ];
 
-    // For PostgreSQL we primarily rely on SQLSTATEs and message heuristics; numeric driver codes are
+    // For PostgreSQL, we primarily rely on SQLSTATEs and message heuristics; numeric driver codes are
     // uncommon in PDO/DBAL for pgsql, but keep the structure consistent with MySQL implementation.
     public const DEFAULT_CONNECTION_MESSAGE_SUBSTRINGS = [
         // Common PG connection loss indicators
