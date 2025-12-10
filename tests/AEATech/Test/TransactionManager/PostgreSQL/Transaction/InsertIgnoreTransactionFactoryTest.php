@@ -1,0 +1,66 @@
+<?php
+declare(strict_types=1);
+
+namespace AEATech\Test\TransactionManager\PostgreSQL\Transaction;
+
+use AEATech\TransactionManager\PostgreSQL\PostgreSQLIdentifierQuoter;
+use AEATech\TransactionManager\PostgreSQL\Transaction\InsertIgnoreTransactionFactory;
+use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
+use Mockery as m;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
+use Throwable;
+
+#[CoversClass(InsertIgnoreTransactionFactory::class)]
+class InsertIgnoreTransactionFactoryTest extends TestCase
+{
+    use MockeryPHPUnitIntegration;
+
+    private InsertValuesBuilder&m\MockInterface $insertValuesBuilder;
+    private InsertIgnoreTransactionFactory $ignoreTransactionFactory;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->insertValuesBuilder = m::mock(InsertValuesBuilder::class);
+        $this->ignoreTransactionFactory = new InsertIgnoreTransactionFactory(
+            $this->insertValuesBuilder,
+            new PostgreSQLIdentifierQuoter(),
+        );
+    }
+
+    /**
+     * @throws Throwable
+     */
+    #[Test]
+    public function factory(): void
+    {
+        $rows = [
+            ['id' => 1, 'name' => 'Alex'],
+        ];
+
+        $this->insertValuesBuilder->shouldReceive('build')
+            ->once()
+            ->with($rows, ['id' => 1])
+            ->andReturn([
+                '(?, ?)',
+                [1, 'Alex'],
+                [0 => 1],
+                ['id', 'name'],
+            ]);
+
+        $tx = $this->ignoreTransactionFactory->factory('users', $rows, ['id' => 1], true);
+
+        $q = $tx->build();
+
+        $expectedSql = 'INSERT INTO "users" ("id", "name") VALUES (?, ?) ON CONFLICT DO NOTHING';
+
+        self::assertSame($expectedSql, $q->sql);
+        self::assertSame([1, 'Alex'], $q->params);
+        self::assertSame([0 => 1], $q->types);
+        self::assertTrue($tx->isIdempotent());
+    }
+}
