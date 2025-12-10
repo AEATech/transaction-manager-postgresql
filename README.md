@@ -25,7 +25,7 @@ composer require aeatech/transaction-manager-postgresql
 
 ```php
 <?php
-use AEATech\TransactionManager\DoctrineAdapter\DbalConnectionAdapter;
+use AEATech\TransactionManager\DoctrineAdapter\DbalPostgresConnectionAdapter;
 use AEATech\TransactionManager\ExecutionPlanBuilder;
 use AEATech\TransactionManager\ExponentialBackoff;
 use AEATech\TransactionManager\GenericErrorClassifier;
@@ -51,7 +51,7 @@ use AEATech\TransactionManager\TxOptions;
 
 // 1) Create a connection adapter (Doctrine DBAL example):
 // $dbal = new Doctrine\DBAL\Connection(...);
-$conn = new DbalConnectionAdapter($dbal);
+$conn = new DbalPostgresConnectionAdapter($dbal);
 
 // 2) Configure the TransactionManager from the core:
 $errorClassifier = new GenericErrorClassifier(new PostgreSQLErrorHeuristics());

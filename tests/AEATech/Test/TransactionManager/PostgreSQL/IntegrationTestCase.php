@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace AEATech\Test\TransactionManager\PostgreSQL;
 
 use AEATech\TransactionManager\ConnectionInterface;
-use AEATech\TransactionManager\DoctrineAdapter\DbalConnectionAdapter;
+use AEATech\TransactionManager\DoctrineAdapter\DbalPostgresConnectionAdapter;
 use AEATech\TransactionManager\ExecutionPlanBuilder;
 use AEATech\TransactionManager\GenericErrorClassifier;
 use AEATech\TransactionManager\PostgreSQL\PostgreSQLErrorHeuristics;
@@ -21,7 +21,7 @@ use Throwable;
 abstract class IntegrationTestCase extends TestCase
 {
     private static ?Connection $raw = null;
-    private static ?DbalConnectionAdapter $adapter = null;
+    private static ?DbalPostgresConnectionAdapter $adapter = null;
     private static ?TransactionManager $tm = null;
 
     /**
@@ -88,7 +88,7 @@ abstract class IntegrationTestCase extends TestCase
         return self::$raw;
     }
 
-    protected static function adapter(): DbalConnectionAdapter
+    protected static function adapter(): DbalPostgresConnectionAdapter
     {
         if (!self::$adapter) {
             self::$adapter = self::makeDbalConnectionAdapter(self::db());
@@ -132,9 +132,9 @@ abstract class IntegrationTestCase extends TestCase
         return DriverManager::getConnection($params, new Configuration());
     }
 
-    private static function makeDbalConnectionAdapter(Connection $connection): DbalConnectionAdapter
+    private static function makeDbalConnectionAdapter(Connection $connection): DbalPostgresConnectionAdapter
     {
-        return new DbalConnectionAdapter($connection);
+        return new DbalPostgresConnectionAdapter($connection);
     }
 
     private static function makeTransactionManager(ConnectionInterface $connection): TransactionManager
