@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace AEATech\Test\TransactionManager\PostgreSQL;
 
-use AEATech\TransactionManager\ConnectionInterface;
 use AEATech\TransactionManager\DoctrineAdapter\DbalPostgresConnectionAdapter;
 use AEATech\TransactionManager\ExecutionPlanBuilder;
 use AEATech\TransactionManager\GenericErrorClassifier;
@@ -21,7 +20,6 @@ use Throwable;
 abstract class IntegrationTestCase extends TestCase
 {
     private static ?Connection $raw = null;
-    private static ?DbalPostgresConnectionAdapter $adapter = null;
     private static ?TransactionManager $tm = null;
 
     /**
@@ -31,8 +29,12 @@ abstract class IntegrationTestCase extends TestCase
     public static function setUpBeforeClass(): void
     {
         self::$raw = self::makeDbalConnection();
-        self::$adapter = self::makeDbalConnectionAdapter(self::$raw);
-        self::$tm = self::makeTransactionManager(self::$adapter);
+        self::$tm = new TransactionManager(
+            new ExecutionPlanBuilder(),
+            new DbalPostgresConnectionAdapter(self::$raw),
+            new GenericErrorClassifier(new PostgreSQLErrorHeuristics()),
+            new SystemSleeper(),
+        );
     }
 
     /**
@@ -66,14 +68,12 @@ abstract class IntegrationTestCase extends TestCase
      */
     private function resetDatabase(): void
     {
-        $conn = self::db();
-
-        $tables = $conn->fetchFirstColumn(
+        $tables = self::db()->fetchFirstColumn(
             'SELECT tablename FROM pg_tables WHERE schemaname = current_schema()'
         );
 
         foreach ($tables as $table) {
-            $conn->executeStatement(
+            self::db()->executeStatement(
                 'DROP TABLE IF EXISTS "' . str_replace('"', '""', $table) . '" CASCADE'
             );
         }
@@ -81,28 +81,11 @@ abstract class IntegrationTestCase extends TestCase
 
     protected static function db(): Connection
     {
-        if (!self::$raw) {
-            self::$raw = self::makeDbalConnection();
-        }
-
         return self::$raw;
-    }
-
-    protected static function adapter(): DbalPostgresConnectionAdapter
-    {
-        if (!self::$adapter) {
-            self::$adapter = self::makeDbalConnectionAdapter(self::db());
-        }
-
-        return self::$adapter;
     }
 
     protected static function tm(): TransactionManager
     {
-        if (!self::$tm) {
-            self::$tm = self::makeTransactionManager(self::adapter());
-        }
-
         return self::$tm;
     }
 
@@ -132,21 +115,6 @@ abstract class IntegrationTestCase extends TestCase
         return DriverManager::getConnection($params, new Configuration());
     }
 
-    private static function makeDbalConnectionAdapter(Connection $connection): DbalPostgresConnectionAdapter
-    {
-        return new DbalPostgresConnectionAdapter($connection);
-    }
-
-    private static function makeTransactionManager(ConnectionInterface $connection): TransactionManager
-    {
-        return new TransactionManager(
-            new ExecutionPlanBuilder(),
-            $connection,
-            new GenericErrorClassifier(new PostgreSQLErrorHeuristics()),
-            new SystemSleeper(),
-        );
-    }
-
     /**
      * PHPUnit lifecycle: close resources.
      */
@@ -160,7 +128,6 @@ abstract class IntegrationTestCase extends TestCase
         }
 
         self::$tm = null;
-        self::$adapter = null;
         self::$raw = null;
     }
 }
