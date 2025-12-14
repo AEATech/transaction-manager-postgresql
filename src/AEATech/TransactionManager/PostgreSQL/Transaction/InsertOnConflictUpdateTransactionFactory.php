@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace AEATech\TransactionManager\PostgreSQL\Transaction;
 
 use AEATech\TransactionManager\PostgreSQL\PostgreSQLIdentifierQuoter;
+use AEATech\TransactionManager\StatementReusePolicy;
 use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
 
 class InsertOnConflictUpdateTransactionFactory
@@ -21,6 +22,7 @@ class InsertOnConflictUpdateTransactionFactory
         ConflictTargetInterface $conflictTarget,
         array $columnTypes = [],
         bool $isIdempotent = false,
+        StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
     ): InsertOnConflictUpdateTransaction {
         return new InsertOnConflictUpdateTransaction(
             $this->insertValuesBuilder,
@@ -30,7 +32,8 @@ class InsertOnConflictUpdateTransactionFactory
             $updateColumns,
             $conflictTarget,
             $columnTypes,
-            $isIdempotent
+            $isIdempotent,
+            $statementReusePolicy
         );
     }
 }

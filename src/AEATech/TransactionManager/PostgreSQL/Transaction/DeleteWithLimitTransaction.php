@@ -5,6 +5,7 @@ namespace AEATech\TransactionManager\PostgreSQL\Transaction;
 
 use AEATech\TransactionManager\PostgreSQL\PostgreSQLIdentifierQuoter;
 use AEATech\TransactionManager\Query;
+use AEATech\TransactionManager\StatementReusePolicy;
 use AEATech\TransactionManager\TransactionInterface;
 use InvalidArgumentException;
 
@@ -34,6 +35,7 @@ class DeleteWithLimitTransaction implements TransactionInterface
         private readonly array $identifiers,
         private readonly int $limit,
         private readonly bool $isIdempotent = true,
+        private readonly StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
     ) {
         if ([] === $this->identifiers) {
             throw new InvalidArgumentException('Identifiers must not be empty.');
@@ -65,7 +67,7 @@ class DeleteWithLimitTransaction implements TransactionInterface
             $this->limit
         );
 
-        return new Query($sql, $params, $types);
+        return new Query($sql, $params, $types, $this->statementReusePolicy);
     }
 
     public function isIdempotent(): bool

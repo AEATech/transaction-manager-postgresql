@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace AEATech\TransactionManager\PostgreSQL\Transaction;
 
 use AEATech\TransactionManager\PostgreSQL\PostgreSQLIdentifierQuoter;
+use AEATech\TransactionManager\StatementReusePolicy;
 use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
 
 class InsertIgnoreTransactionFactory
@@ -19,6 +20,7 @@ class InsertIgnoreTransactionFactory
         array $rows,
         array $columnTypes = [],
         bool $isIdempotent = false,
+        StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
     ): InsertIgnoreTransaction {
         return new InsertIgnoreTransaction(
             $this->insertValuesBuilder,
@@ -26,7 +28,8 @@ class InsertIgnoreTransactionFactory
             $tableName,
             $rows,
             $columnTypes,
-            $isIdempotent
+            $isIdempotent,
+            $statementReusePolicy
         );
     }
 }

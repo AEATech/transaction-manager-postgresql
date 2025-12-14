@@ -5,6 +5,7 @@ namespace AEATech\TransactionManager\PostgreSQL\Transaction;
 
 use AEATech\TransactionManager\PostgreSQL\PostgreSQLIdentifierQuoter;
 use AEATech\TransactionManager\Query;
+use AEATech\TransactionManager\StatementReusePolicy;
 use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
 use AEATech\TransactionManager\TransactionInterface;
 use InvalidArgumentException;
@@ -21,16 +22,6 @@ use InvalidArgumentException;
  */
 class InsertOnConflictUpdateTransaction implements TransactionInterface
 {
-    /**
-     * @param InsertValuesBuilder                $insertValuesBuilder
-     * @param PostgreSQLIdentifierQuoter         $quoter
-     * @param string                             $tableName
-     * @param array<array<string, mixed>>        $rows
-     * @param string[]                           $updateColumns Columns that will be updated on conflict
-     * @param ConflictTargetInterface            $conflictTarget Conflict target (columns or constraint)
-     * @param array<string, int|string>          $columnTypes
-     * @param bool                               $isIdempotent
-     */
     public function __construct(
         private readonly InsertValuesBuilder $insertValuesBuilder,
         private readonly PostgreSQLIdentifierQuoter $quoter,
@@ -40,6 +31,7 @@ class InsertOnConflictUpdateTransaction implements TransactionInterface
         private readonly ConflictTargetInterface $conflictTarget,
         private readonly array $columnTypes = [],
         private readonly bool $isIdempotent = false,
+        private readonly StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
     ) {
         if ([] === $this->updateColumns) {
             throw new InvalidArgumentException(
@@ -86,7 +78,7 @@ class InsertOnConflictUpdateTransaction implements TransactionInterface
             implode(', ', $updateAssignments),
         );
 
-        return new Query($sql, $params, $types);
+        return new Query($sql, $params, $types, $this->statementReusePolicy);
     }
 
     public function isIdempotent(): bool

@@ -6,6 +6,7 @@ namespace AEATech\Test\TransactionManager\PostgreSQL\Transaction;
 use AEATech\TransactionManager\PostgreSQL\PostgreSQLIdentifierQuoter;
 use AEATech\TransactionManager\PostgreSQL\Transaction\DeleteWithLimitTransaction;
 use AEATech\TransactionManager\PostgreSQL\Transaction\DeleteWithLimitTransactionFactory;
+use AEATech\TransactionManager\StatementReusePolicy;
 use PDO;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -48,7 +49,8 @@ class DeleteWithLimitTransactionFactoryTest extends TestCase
             $identifierColumnType,
             $identifiers,
             $limit,
-            $isIdempotent
+            $isIdempotent,
+            StatementReusePolicy::PerTransaction
         );
 
         $actual = $this->deleteWithLimitTransactionFactory->factory(
@@ -57,7 +59,8 @@ class DeleteWithLimitTransactionFactoryTest extends TestCase
             $identifierColumnType,
             $identifiers,
             $limit,
-            $isIdempotent
+            $isIdempotent,
+            StatementReusePolicy::PerTransaction
         );
 
         self::assertEquals($expected, $actual);

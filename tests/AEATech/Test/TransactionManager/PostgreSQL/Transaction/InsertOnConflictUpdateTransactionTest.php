@@ -7,6 +7,7 @@ use AEATech\TransactionManager\PostgreSQL\PostgreSQLIdentifierQuoter;
 use AEATech\TransactionManager\PostgreSQL\Transaction\ColumnsConflictTarget;
 use AEATech\TransactionManager\PostgreSQL\Transaction\ConstraintConflictTarget;
 use AEATech\TransactionManager\PostgreSQL\Transaction\InsertOnConflictUpdateTransaction;
+use AEATech\TransactionManager\StatementReusePolicy;
 use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
 use InvalidArgumentException;
 use Mockery as m;
@@ -62,6 +63,7 @@ class InsertOnConflictUpdateTransactionTest extends TestCase
             new ColumnsConflictTarget($this->quoter, ['id']),
             ['id' => 1],
             true,
+            StatementReusePolicy::PerTransaction
         );
 
         $q = $tx->build();
@@ -72,6 +74,7 @@ class InsertOnConflictUpdateTransactionTest extends TestCase
         self::assertSame([1, 'Alex'], $q->params);
         self::assertSame([0 => 1], $q->types);
         self::assertTrue($tx->isIdempotent());
+        self::assertSame(StatementReusePolicy::PerTransaction, $q->statementReusePolicy);
     }
 
     /**
