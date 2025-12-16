@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace AEATech\Test\TransactionManager\PostgreSQL;
 
 use AEATech\TransactionManager\DoctrineAdapter\DbalPostgresConnectionAdapter;
+use AEATech\TransactionManager\DoctrineAdapter\StatementExecutor\BindingInfoResolver;
+use AEATech\TransactionManager\DoctrineAdapter\StatementExecutor\StatementExecutor;
 use AEATech\TransactionManager\ExecutionPlanBuilder;
 use AEATech\TransactionManager\GenericErrorClassifier;
 use AEATech\TransactionManager\PostgreSQL\PostgreSQLErrorHeuristics;
@@ -31,7 +33,7 @@ abstract class IntegrationTestCase extends TestCase
         self::$raw = self::makeDbalConnection();
         self::$tm = new TransactionManager(
             new ExecutionPlanBuilder(),
-            new DbalPostgresConnectionAdapter(self::$raw),
+            new DbalPostgresConnectionAdapter(self::$raw, new StatementExecutor(new BindingInfoResolver())),
             new GenericErrorClassifier(new PostgreSQLErrorHeuristics()),
             new SystemSleeper(),
         );
