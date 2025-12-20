@@ -59,6 +59,7 @@ $tm = new TransactionManager(
     executionPlanBuilder: new ExecutionPlanBuilder(),
     connection: $conn,
     errorClassifier: $errorClassifier,
+    defaultRetryPolicy: new RetryPolicy(1, new ExponentialBackoff()),
     sleeper: new SystemSleeper(),
 );
 
