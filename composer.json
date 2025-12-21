@@ -1,6 +1,7 @@
 {
     "name": "aeatech/transaction-manager-postgresql",
     "description": "PostgreSQL dialect layer for AEATech Transaction Manager, providing PostgreSQL-specific SQL behavior and extensions not covered by the core or common packages.",
+    "keywords": ["transaction-manager", "transaction", "database", "PostgreSQL"],
     "license": "MIT",
     "type": "library",
     "config": {
@@ -48,14 +49,5 @@
             "/tests",
             "/phpunit.xml"
         ]
-    },
-    "keywords": [
-        "transaction",
-        "bulk-update",
-        "insert",
-        "update",
-        "delete",
-        "postgresql-specific",
-        "database"
-    ]
+    }
 }
