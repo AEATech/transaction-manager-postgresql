@@ -13,6 +13,7 @@ use AEATech\TransactionManager\PostgreSQL\Transaction\InsertOnConflictUpdateTran
 use AEATech\TransactionManager\PostgreSQL\Transaction\ColumnsConflictTargetFactory;
 use AEATech\TransactionManager\PostgreSQL\Transaction\ConstraintConflictTargetFactory;
 use AEATech\TransactionManager\PostgreSQL\PostgreSQLIdentifierQuoter;
+use AEATech\TransactionManager\StatementReusePolicy;
 use AEATech\TransactionManager\Transaction\DeleteTransaction;
 use AEATech\TransactionManager\Transaction\DeleteTransactionFactory;
 use AEATech\TransactionManager\Transaction\InsertTransaction;
@@ -81,7 +82,7 @@ class TransactionsFactoryTest extends TestCase
 
         $this->insertFactory->shouldReceive('factory')
             ->once()
-            ->with('users', $rows, ['id' => 1], true)
+            ->with('users', $rows, ['id' => 1], true, StatementReusePolicy::None)
             ->andReturn($tx);
 
         $result = $this->transactionsFactory->createInsert('users', $rows, ['id' => 1], true);
@@ -97,7 +98,7 @@ class TransactionsFactoryTest extends TestCase
 
         $this->insertIgnoreFactory->shouldReceive('factory')
             ->once()
-            ->with('t', $rows, [], false)
+            ->with('t', $rows, [], false, StatementReusePolicy::None)
             ->andReturn($tx);
 
         $result = $this->transactionsFactory->createInsertIgnore('t', $rows);
@@ -115,7 +116,7 @@ class TransactionsFactoryTest extends TestCase
 
         $this->upsertFactory->shouldReceive('factory')
             ->once()
-            ->with('contacts', $rows, $updateColumns, $conflict, ['id' => 1], true)
+            ->with('contacts', $rows, $updateColumns, $conflict, ['id' => 1], true, StatementReusePolicy::None)
             ->andReturn($tx);
 
         $result = $this->transactionsFactory->createInsertOnConflictUpdate(
@@ -137,7 +138,7 @@ class TransactionsFactoryTest extends TestCase
         $params = [10, 1, 2];
         $types = [PDO::PARAM_INT, PDO::PARAM_INT, PDO::PARAM_INT];
 
-        $expected = new SqlTransaction($sql, $params, $types);
+        $expected = new SqlTransaction($sql, $params, $types, false, StatementReusePolicy::None);
 
         $sqlTransaction = $this->transactionsFactory->createSql($sql, $params, $types);
 
@@ -151,14 +152,14 @@ class TransactionsFactoryTest extends TestCase
 
         $this->deleteFactory->shouldReceive('factory')
             ->once()
-            ->with('logs', 'id', 1, [10, 11, 12], true)
+            ->with('logs', 'id', 1, [10, 11, 12], true, StatementReusePolicy::None)
             ->andReturn($tx);
 
         $result = $this->transactionsFactory->createDelete(
             'logs',
             'id',
             1,
-            [10, 11, 12]
+            [10, 11, 12],
         );
 
         self::assertSame($tx, $result);
@@ -171,7 +172,7 @@ class TransactionsFactoryTest extends TestCase
 
         $this->deleteWithLimitFactory->shouldReceive('factory')
             ->once()
-            ->with('logs', 'id', 1, [10, 11, 12], 2, true)
+            ->with('logs', 'id', 1, [10, 11, 12], 2, true, StatementReusePolicy::None)
             ->andReturn($tx);
 
         $result = $this->transactionsFactory->createDeleteWithLimit(
@@ -193,7 +194,7 @@ class TransactionsFactoryTest extends TestCase
 
         $this->updateFactory->shouldReceive('factory')
             ->once()
-            ->with('users', 'id', 1, [1, 2, 3], $columns, [], true)
+            ->with('users', 'id', 1, [1, 2, 3], $columns, [], true, StatementReusePolicy::None)
             ->andReturn($tx);
 
         $result = $this->transactionsFactory->createUpdate(
@@ -220,7 +221,7 @@ class TransactionsFactoryTest extends TestCase
 
         $this->updateWhenThenFactory->shouldReceive('factory')
             ->once()
-            ->with('users', $rows, 'id', 1, $updateColumns, $types, true)
+            ->with('users', $rows, 'id', 1, $updateColumns, $types, true, StatementReusePolicy::None)
             ->andReturn($tx);
 
         $result = $this->transactionsFactory->createUpdateWhenThen(
