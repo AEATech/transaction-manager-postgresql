@@ -1,5 +1,7 @@
 # AEATech Transaction Manager – PostgreSQL
 
+![Code Coverage](.build/coverage_badge.svg)
+
 Lightweight module for generating safe and efficient PostgreSQL statements:
 - INSERT
 - INSERT ... ON CONFLICT DO NOTHING (aka INSERT IGNORE)
@@ -402,7 +404,7 @@ done
 
 ## Run phpstan
 ```bash
-docker-compose -p aeatech-transaction-manager-postgresql -f docker/docker-compose.yml exec php-cli-8.3-pg16 vendor/bin/phpstan analyse -c phpstan.neon
+docker-compose -p aeatech-transaction-manager-postgresql -f docker/docker-compose.yml exec php-cli-8.3-pg16 vendor/bin/phpstan analyse -c phpstan.neon --memory-limit=1G
 ```
 
 ## To stop and remove containers:
