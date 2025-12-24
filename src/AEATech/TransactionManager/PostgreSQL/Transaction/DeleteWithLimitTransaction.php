@@ -27,6 +27,9 @@ use InvalidArgumentException;
  */
 class DeleteWithLimitTransaction implements TransactionInterface
 {
+    /**
+     * @param array<int|string, mixed> $identifiers Non-empty list of identifiers.
+     */
     public function __construct(
         private readonly PostgreSQLIdentifierQuoter $quoter,
         private readonly string $tableName,
@@ -72,6 +75,6 @@ class DeleteWithLimitTransaction implements TransactionInterface
 
     public function isIdempotent(): bool
     {
-        return $this->isIdempotent ?? false;
+        return $this->isIdempotent;
     }
 }

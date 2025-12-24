@@ -11,6 +11,10 @@ use AEATech\TransactionManager\PostgreSQL\PostgreSQLIdentifierQuoter;
 
 class InsertIgnoreTransaction implements TransactionInterface
 {
+    /**
+     * @param array<array<string, mixed>> $rows
+     * @param array<string, mixed> $columnTypes
+     */
     public function __construct(
         private readonly InsertValuesBuilder $insertValuesBuilder,
         private readonly PostgreSQLIdentifierQuoter $quoter,

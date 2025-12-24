@@ -15,6 +15,11 @@ class InsertOnConflictUpdateTransactionFactory
     ) {
     }
 
+    /**
+     * @param array<array<string, mixed>> $rows
+     * @param string[] $updateColumns
+     * @param array<string, mixed> $columnTypes
+     */
     public function factory(
         string $tableName,
         array $rows,

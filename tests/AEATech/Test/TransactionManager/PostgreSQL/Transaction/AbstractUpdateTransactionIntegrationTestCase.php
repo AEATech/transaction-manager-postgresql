@@ -58,7 +58,6 @@ abstract class AbstractUpdateTransactionIntegrationTestCase extends IntegrationT
             self::UPDATE_COLUMN_2
         ));
 
-        // Init state
         $initTransaction = new InsertTransaction(
             new InsertValuesBuilder(),
             new PostgreSQLIdentifierQuoter(),
@@ -72,6 +71,8 @@ abstract class AbstractUpdateTransactionIntegrationTestCase extends IntegrationT
     }
 
     /**
+     * @param array<int, array<string, mixed>> $expected
+     *
      * @throws Throwable
      */
     protected static function assertState(array $expected): void

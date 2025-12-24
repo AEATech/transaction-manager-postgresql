@@ -13,6 +13,9 @@ class DeleteWithLimitTransactionFactory
     ) {
     }
 
+    /**
+     * @param array<string|int, mixed> $identifiers Non-empty list of identifiers.
+     */
     public function factory(
         string $tableName,
         string $identifierColumn,

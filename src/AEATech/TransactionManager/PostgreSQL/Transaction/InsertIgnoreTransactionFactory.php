@@ -15,6 +15,10 @@ class InsertIgnoreTransactionFactory
     ) {
     }
 
+    /**
+     * @param array<array<string, mixed>> $rows
+     * @param array<string, mixed> $columnTypes
+     */
     public function factory(
         string $tableName,
         array $rows,

@@ -1,0 +1,16 @@
+includes:
+    - vendor/phpstan/phpstan-mockery/extension.neon
+
+parameters:
+    level: 9
+    paths:
+        - src
+        - tests
+    tips:
+        treatPhpDocTypesAsCertain: false
+    parallel:
+        maximumNumberOfProcesses: 2
+    ignoreErrors:
+        -
+            message: '#Method .*DataProvider.* return type has no( value)? type specified in iterable type array\.#'
+            reportUnmatched: false

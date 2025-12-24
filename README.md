@@ -400,7 +400,12 @@ for v in php-cli-8.2-pg16 php-cli-8.2-pg17 php-cli-8.2-pg18 php-cli-8.3-pg16 php
 done
 ```
 
-To stop and remove containers:
+## Run phpstan
+```bash
+docker-compose -p aeatech-transaction-manager-postgresql -f docker/docker-compose.yml exec php-cli-8.3-pg16 vendor/bin/phpstan analyse -c phpstan.neon
+```
+
+## To stop and remove containers:
 
 ```bash
 docker-compose -p aeatech-transaction-manager-postgresql -f docker/docker-compose.yml down -v

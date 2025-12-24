@@ -12,6 +12,9 @@ class ColumnsConflictTargetFactory
     ) {
     }
 
+    /**
+     * @param string[] $columns
+     */
     public function factory(array $columns): ConflictTargetInterface
     {
         return new ColumnsConflictTarget($this->quoter, $columns);

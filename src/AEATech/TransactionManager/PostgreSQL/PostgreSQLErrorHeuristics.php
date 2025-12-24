@@ -48,9 +48,24 @@ class PostgreSQLErrorHeuristics implements DatabaseErrorHeuristicsInterface
         'could not obtain lock on',
     ];
 
+    /**
+     * @var string[]
+     */
     private array $sqlstateConnectionPrefixes;
+
+    /**
+     * @var string[]
+     */
     private array $connectionMsgNeedles;
+
+    /**
+     * @var string[]
+     */
     private array $transientSqlStates;
+
+    /**
+     * @var string[]
+     */
     private array $transientMsgNeedles;
 
     /**
@@ -65,7 +80,6 @@ class PostgreSQLErrorHeuristics implements DatabaseErrorHeuristicsInterface
         ?array $transientSqlStates = null,
         ?array $transientMsgNeedles = null
     ) {
-        // Normalize all inputs to lower-case to enable case-insensitive checks.
         $this->sqlstateConnectionPrefixes = array_map(
             'strtolower',
             $sqlstateConnectionPrefixes ?? self::DEFAULT_SQLSTATE_CONNECTION_PREFIXES

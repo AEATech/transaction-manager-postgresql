@@ -34,13 +34,13 @@ class PostgreSQLErrorHeuristicsTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('connectionIssueMessageProvider')]
+    #[DataProvider('connectionIssueMessageDataProvider')]
     public function isConnectionIssueByMessageSubstring(string $message): void
     {
         self::assertTrue($this->heuristics->isConnectionIssue(null, null, $message));
     }
 
-    public static function connectionIssueMessageProvider(): array
+    public static function connectionIssueMessageDataProvider(): array
     {
         return [
             'server closed unexpectedly' => ['server closed the connection unexpectedly'],
@@ -75,13 +75,13 @@ class PostgreSQLErrorHeuristicsTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('transientIssueMessageProvider')]
+    #[DataProvider('transientIssueMessageDataProvider')]
     public function isTransientIssueByMessageSubstring(string $message): void
     {
         self::assertTrue($this->heuristics->isTransientIssue(null, null, $message));
     }
 
-    public static function transientIssueMessageProvider(): array
+    public static function transientIssueMessageDataProvider(): array
     {
         return [
             'deadlock' => ['deadlock detected'],
