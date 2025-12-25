@@ -5,7 +5,7 @@ services:
     # PostgreSQL 16
     # --------------------------------------------------------------------------
     pg16:
-        image: postgres:16
+        image: postgres:16-bullseye
         restart: on-failure
         environment:
             POSTGRES_USER: test
@@ -71,7 +71,7 @@ services:
     # PostgreSQL 17
     # --------------------------------------------------------------------------
     pg17:
-        image: postgres:17
+        image: postgres:17-bullseye
         restart: on-failure
         environment:
             POSTGRES_USER: test
@@ -137,7 +137,7 @@ services:
     # PostgreSQL 18
     # --------------------------------------------------------------------------
     pg18:
-        image: postgres:18
+        image: postgres:18-alpine
         restart: on-failure
         environment:
             POSTGRES_USER: test
