@@ -1,71 +1,18 @@
 <?php
 declare(strict_types=1);
 
-
 namespace AEATech\TransactionManager\PostgreSQL;
 
-use AEATech\TransactionManager\PostgreSQL\Transaction\ColumnsConflictTargetFactory;
 use AEATech\TransactionManager\PostgreSQL\Transaction\ConflictTargetInterface;
-use AEATech\TransactionManager\PostgreSQL\Transaction\ConstraintConflictTargetFactory;
-use AEATech\TransactionManager\PostgreSQL\Transaction\DeleteWithLimitTransactionFactory;
-use AEATech\TransactionManager\PostgreSQL\Transaction\InsertIgnoreTransactionFactory;
-use AEATech\TransactionManager\PostgreSQL\Transaction\InsertOnConflictUpdateTransactionFactory;
 use AEATech\TransactionManager\StatementReusePolicy;
-use AEATech\TransactionManager\Transaction\DeleteTransactionFactory;
-use AEATech\TransactionManager\Transaction\InsertTransactionFactory;
-use AEATech\TransactionManager\Transaction\SqlTransaction;
-use AEATech\TransactionManager\Transaction\UpdateTransactionFactory;
-use AEATech\TransactionManager\Transaction\UpdateWhenThenTransactionFactory;
 use AEATech\TransactionManager\TransactionInterface;
 use InvalidArgumentException;
 
 /**
  * Convenience facade for creating PostgreSQL-specific TransactionInterface instances.
- *
- * This class exposes a compact, high-level API for building common write
- * transactions (INSERT, DELETE, UPDATE, CASE-based UPDATE) as well as
- * PostgreSQL upserts via `ON CONFLICT ... DO UPDATE`.
- *
- * Typical usage:
- *
- *     $transactions = new TransactionsFactory(
- *         insertTransactionFactory: $insertFactory,
- *         insertIgnoreTransactionFactory: $insertIgnoreFactory,
- *         insertOnConflictUpdateTransactionFactory: $upsertFactory,
- *         deleteTransactionFactory: $deleteFactory,
- *         deleteWithLimitTransactionFactory: $deleteWithLimitFactory,
- *         updateTransactionFactory: $updateFactory,
- *         updateWhenThenTransactionFactory: $updateWhenThenFactory,
- *         columnsConflictTargetFactory: $columnsTargetFactory,
- *         constraintConflictTargetFactory: $constraintTargetFactory
- *     );
- *
- *     $tx = $transactions->createInsertOnConflictUpdate(
- *         tableName: 'users',
- *         rows: [
- *             ['id' => 1, 'email' => 'foo@example.com', 'name' => 'Foo'],
- *         ],
- *         updateColumns: ['name'],
- *         conflictTarget: $transactions->conflictTargetByColumns(['email'])
- *     );
- *
- *     $runResult = $transactionManager->run($tx, $options);
  */
-class TransactionsFactory
+interface PostgreSQLTransactionsFactoryInterface
 {
-    public function __construct(
-        private readonly InsertTransactionFactory $insertTransactionFactory,
-        private readonly InsertIgnoreTransactionFactory $insertIgnoreTransactionFactory,
-        private readonly InsertOnConflictUpdateTransactionFactory $insertOnConflictUpdateTransactionFactory,
-        private readonly DeleteTransactionFactory $deleteTransactionFactory,
-        private readonly DeleteWithLimitTransactionFactory $deleteWithLimitTransactionFactory,
-        private readonly UpdateTransactionFactory $updateTransactionFactory,
-        private readonly UpdateWhenThenTransactionFactory $updateWhenThenTransactionFactory,
-        private readonly ColumnsConflictTargetFactory $columnsConflictTargetFactory,
-        private readonly ConstraintConflictTargetFactory $constraintConflictTargetFactory,
-    ) {
-    }
-
     /**
      * Creates an INSERT transaction:
      *
@@ -111,15 +58,7 @@ class TransactionsFactory
         array $columnTypes = [],
         bool $isIdempotent = false,
         StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
-    ): TransactionInterface {
-        return $this->insertTransactionFactory->factory(
-            tableName: $tableName,
-            rows: $rows,
-            columnTypes: $columnTypes,
-            isIdempotent: $isIdempotent,
-            statementReusePolicy: $statementReusePolicy,
-        );
-    }
+    ): TransactionInterface;
 
     /**
      * Creates an INSERT IGNORE transaction for PostgreSQL.
@@ -148,15 +87,7 @@ class TransactionsFactory
         array $columnTypes = [],
         bool $isIdempotent = false,
         StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
-    ): TransactionInterface {
-        return $this->insertIgnoreTransactionFactory->factory(
-            tableName: $tableName,
-            rows: $rows,
-            columnTypes: $columnTypes,
-            isIdempotent: $isIdempotent,
-            statementReusePolicy: $statementReusePolicy,
-        );
-    }
+    ): TransactionInterface;
 
     /**
      * Creates a PostgreSQL UPSERT (INSERT ... ON CONFLICT DO UPDATE) transaction.
@@ -207,17 +138,7 @@ class TransactionsFactory
         array $columnTypes = [],
         bool $isIdempotent = false,
         StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
-    ): TransactionInterface {
-        return $this->insertOnConflictUpdateTransactionFactory->factory(
-            tableName: $tableName,
-            rows: $rows,
-            updateColumns: $updateColumns,
-            conflictTarget: $conflictTarget,
-            columnTypes: $columnTypes,
-            isIdempotent: $isIdempotent,
-            statementReusePolicy: $statementReusePolicy,
-        );
-    }
+    ): TransactionInterface;
 
     /**
      * Wraps an arbitrary SQL statement in a transaction object.
@@ -252,9 +173,7 @@ class TransactionsFactory
         array $types = [],
         bool $isIdempotent = false,
         StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
-    ): TransactionInterface {
-        return new SqlTransaction($sql, $params, $types, $isIdempotent, $statementReusePolicy);
-    }
+    ): TransactionInterface;
 
     /**
      * Creates a DELETE transaction by identifier column:
@@ -292,16 +211,7 @@ class TransactionsFactory
         array $identifiers,
         bool $isIdempotent = true,
         StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
-    ): TransactionInterface {
-        return $this->deleteTransactionFactory->factory(
-            tableName: $tableName,
-            identifierColumn: $identifierColumn,
-            identifierColumnType: $identifierColumnType,
-            identifiers: $identifiers,
-            isIdempotent: $isIdempotent,
-            statementReusePolicy: $statementReusePolicy,
-        );
-    }
+    ): TransactionInterface;
 
     /**
      * Creates a PostgreSQL-specific DELETE transaction with a LIMIT-like cap.
@@ -335,17 +245,7 @@ class TransactionsFactory
         int $limit,
         bool $isIdempotent = true,
         StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
-    ): TransactionInterface {
-        return $this->deleteWithLimitTransactionFactory->factory(
-            tableName: $tableName,
-            identifierColumn: $identifierColumn,
-            identifierColumnType: $identifierColumnType,
-            identifiers: $identifiers,
-            limit: $limit,
-            isIdempotent: $isIdempotent,
-            statementReusePolicy: $statementReusePolicy,
-        );
-    }
+    ): TransactionInterface;
 
     /**
      * Creates a bulk UPDATE transaction that assigns the same values to all
@@ -390,18 +290,7 @@ class TransactionsFactory
         array $columnTypes = [],
         bool $isIdempotent = true,
         StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
-    ): TransactionInterface {
-        return $this->updateTransactionFactory->factory(
-            tableName: $tableName,
-            identifierColumn: $identifierColumn,
-            identifierColumnType: $identifierColumnType,
-            identifiers: $identifiers,
-            columnsWithValuesForUpdate: $columnsWithValuesForUpdate,
-            columnTypes: $columnTypes,
-            isIdempotent: $isIdempotent,
-            statementReusePolicy: $statementReusePolicy,
-        );
-    }
+    ): TransactionInterface;
 
     /**
      * Creates a CASE-based bulk UPDATE that assigns different values to
@@ -456,18 +345,7 @@ class TransactionsFactory
         array $updateColumnTypes = [],
         bool $isIdempotent = true,
         StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
-    ): TransactionInterface {
-        return $this->updateWhenThenTransactionFactory->factory(
-            tableName: $tableName,
-            rows: $rows,
-            identifierColumn: $identifierColumn,
-            identifierColumnType: $identifierColumnType,
-            updateColumns: $updateColumns,
-            updateColumnTypes: $updateColumnTypes,
-            isIdempotent: $isIdempotent,
-            statementReusePolicy: $statementReusePolicy,
-        );
-    }
+    ): TransactionInterface;
 
     /**
      * Helper to build `ON CONFLICT (col1, col2, ...)` conflict target.
@@ -479,10 +357,7 @@ class TransactionsFactory
      * @param string[] $columns Non-empty list of column names.
      * @return ConflictTargetInterface
      */
-    public function conflictTargetByColumns(array $columns): ConflictTargetInterface
-    {
-        return $this->columnsConflictTargetFactory->factory($columns);
-    }
+    public function conflictTargetByColumns(array $columns): ConflictTargetInterface;
 
     /**
      * Helper to build `ON CONFLICT ON CONSTRAINT <name>` conflict target.
@@ -493,8 +368,5 @@ class TransactionsFactory
      * @param string $constraintName Existing constraint name in the target table.
      * @return ConflictTargetInterface
      */
-    public function conflictTargetByConstraint(string $constraintName): ConflictTargetInterface
-    {
-        return $this->constraintConflictTargetFactory->factory($constraintName);
-    }
+    public function conflictTargetByConstraint(string $constraintName): ConflictTargetInterface;
 }

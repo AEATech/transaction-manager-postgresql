@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace AEATech\Test\TransactionManager\PostgreSQL;
 
-use AEATech\TransactionManager\PostgreSQL\TransactionsFactory;
+use AEATech\TransactionManager\PostgreSQL\PostgreSQLTransactionsFactory;
 use AEATech\TransactionManager\PostgreSQL\Transaction\DeleteWithLimitTransaction;
 use AEATech\TransactionManager\PostgreSQL\Transaction\DeleteWithLimitTransactionFactory;
 use AEATech\TransactionManager\PostgreSQL\Transaction\InsertIgnoreTransaction;
@@ -31,8 +31,8 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
-#[CoversClass(TransactionsFactory::class)]
-class TransactionsFactoryTest extends TestCase
+#[CoversClass(PostgreSQLTransactionsFactory::class)]
+class PostgreSQLTransactionsFactoryTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
@@ -43,7 +43,7 @@ class TransactionsFactoryTest extends TestCase
     private DeleteWithLimitTransactionFactory&m\MockInterface $deleteWithLimitFactory;
     private UpdateTransactionFactory&m\MockInterface $updateFactory;
     private UpdateWhenThenTransactionFactory&m\MockInterface $updateWhenThenFactory;
-    private TransactionsFactory $transactionsFactory;
+    private PostgreSQLTransactionsFactory $transactionsFactory;
 
     protected function setUp(): void
     {
@@ -61,7 +61,7 @@ class TransactionsFactoryTest extends TestCase
         $columnsConflictTargetFactory = new ColumnsConflictTargetFactory($quoter);
         $constraintConflictTargetFactory = new ConstraintConflictTargetFactory($quoter);
 
-        $this->transactionsFactory = new TransactionsFactory(
+        $this->transactionsFactory = new PostgreSQLTransactionsFactory(
             insertTransactionFactory: $this->insertFactory,
             insertIgnoreTransactionFactory: $this->insertIgnoreFactory,
             insertOnConflictUpdateTransactionFactory: $this->upsertFactory,

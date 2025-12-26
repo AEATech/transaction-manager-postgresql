@@ -16,6 +16,7 @@ For Doctrine DBAL users, there is an adapter package: `aeatech/transaction-manag
 System requirements:
 - PHP >= 8.2
 - ext-pdo
+- ext-pdo_pgsql
 - PostgreSQL 12+ (tested with 16; `ctid`-based DELETE LIMIT is PostgreSQL-specific)
 
 Installation (Composer):
@@ -34,64 +35,13 @@ use AEATech\TransactionManager\GenericErrorClassifier;
 use AEATech\TransactionManager\IsolationLevel;
 use AEATech\TransactionManager\PostgreSQL\PostgreSQLErrorHeuristics;
 use AEATech\TransactionManager\PostgreSQL\PostgreSQLIdentifierQuoter;
-use AEATech\TransactionManager\PostgreSQL\TransactionsFactory as PgTxFactory;
-use AEATech\TransactionManager\RetryPolicy;
-use AEATech\TransactionManager\SystemSleeper;
-use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
-use AEATech\TransactionManager\Transaction\Internal\UpdateWhenThenDefinitionsBuilder;
-use AEATech\TransactionManager\PostgreSQL\Transaction\InsertIgnoreTransactionFactory;
-use AEATech\TransactionManager\PostgreSQL\Transaction\InsertOnConflictUpdateTransactionFactory;
-use AEATech\TransactionManager\PostgreSQL\Transaction\DeleteWithLimitTransactionFactory;
-use AEATech\TransactionManager\PostgreSQL\Transaction\ColumnsConflictTargetFactory;
-use AEATech\TransactionManager\PostgreSQL\Transaction\ConstraintConflictTargetFactory;
-use AEATech\TransactionManager\Transaction\DeleteTransactionFactory;
-use AEATech\TransactionManager\Transaction\InsertTransactionFactory;
-use AEATech\TransactionManager\Transaction\UpdateTransactionFactory;
-use AEATech\TransactionManager\Transaction\UpdateWhenThenTransactionFactory;
-use AEATech\TransactionManager\TransactionManager;
-use AEATech\TransactionManager\TxOptions;
+use AEATech\TransactionManager\PostgreSQL\PostgreSQLTransactionsFactoryBuilder;
+use AEATech\TransactionManager\PostgreSQL\PostgreSQLTransactionsFactoryInterface as PgTxFactory;
 
-// 1) Create a connection adapter (Doctrine DBAL example):
-// $dbal = new Doctrine\DBAL\Connection(...);
-$conn = new DbalPostgresConnectionAdapter($dbal);
+// Create the PostgreSQL transactions factory
+$txFactory = PostgreSQLTransactionsFactoryBuilder::build();
 
-// 2) Configure the TransactionManager from the core:
-$errorClassifier = new GenericErrorClassifier(new PostgreSQLErrorHeuristics());
-$tm = new TransactionManager(
-    executionPlanBuilder: new ExecutionPlanBuilder(),
-    connection: $conn,
-    errorClassifier: $errorClassifier,
-    defaultRetryPolicy: new RetryPolicy(1, new ExponentialBackoff()),
-    sleeper: new SystemSleeper(),
-);
-
-// 3) Create the PostgreSQL transactions factory
-$quoter = new PostgreSQLIdentifierQuoter();
-$insertValuesBuilder = new InsertValuesBuilder();
-$updateWhenThenDefs = new UpdateWhenThenDefinitionsBuilder();
-
-$txFactory = new PgTxFactory(
-    insertTransactionFactory: new InsertTransactionFactory(
-        $insertValuesBuilder,
-        $quoter,
-    ),
-    insertIgnoreTransactionFactory: new InsertIgnoreTransactionFactory(
-        $insertValuesBuilder,
-        $quoter,
-    ),
-    insertOnConflictUpdateTransactionFactory: new InsertOnConflictUpdateTransactionFactory(
-        $insertValuesBuilder,
-        $quoter,
-    ),
-    deleteTransactionFactory: new DeleteTransactionFactory($quoter),
-    deleteWithLimitTransactionFactory: new DeleteWithLimitTransactionFactory($quoter),
-    updateTransactionFactory: new UpdateTransactionFactory($quoter),
-    updateWhenThenTransactionFactory: new UpdateWhenThenTransactionFactory($updateWhenThenDefs, $quoter),
-    columnsConflictTargetFactory: new ColumnsConflictTargetFactory($quoter),
-    constraintConflictTargetFactory: new ConstraintConflictTargetFactory($quoter),
-);
-
-// 4) Example: UPSERT by unique email
+// Example: UPSERT by unique email
 $tx = $txFactory->createInsertOnConflictUpdate(
     tableName: 'users',
     rows: [
